@@ -27,13 +27,12 @@ class ReturnYoutubeDislikePP(PostProcessor):
             return [], info
 
         api_data = self._download_json(
-            f'https://returnyoutubedislikeapi.com/votes?videoId={info["id"]}') or {}
+            f'https://returnyoutubedislikeapi.com/votes?videoId={info["id"]}&likeCount={info["like_count"]}') or {}
 
         info['RYD'] = {
             'response': api_data,
             'original': {k: info.get(k) for k in RYD_FIELDS.keys()}
         }
-        if api_data:
-            info.update({k: api_data.get(v) for k, v in RYD_FIELDS.items()})
+        info.update({k: v for k, f in RYD_FIELDS.items() if (v := api_data.get(f))})
 
         return [], info
