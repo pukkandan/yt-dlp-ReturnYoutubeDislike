@@ -4,7 +4,10 @@ The original values of those fields and the response from the API are saved
 under "RYD" key in the info dict
 """
 
+from urllib.parse import urlencode
+
 from yt_dlp.postprocessor.common import PostProcessor
+from yt_dlp.utils import filter_dict
 
 
 RYD_FIELDS = {
@@ -27,7 +30,10 @@ class ReturnYoutubeDislikePP(PostProcessor):
             return [], info
 
         api_data = self._download_json(
-            f'https://returnyoutubedislikeapi.com/votes?videoId={info["id"]}&likeCount={info["like_count"]}') or {}
+            'https://returnyoutubedislikeapi.com/votes?' + urlencode(filter_dict({
+                'videoId': info['id'],
+                'likeCount': info.get('like_count'),
+            }))) or {}
 
         info['RYD'] = {
             'response': api_data,
